@@ -47,3 +47,9 @@ Explanation:
 The -o switch tells the compiler to save the output with the specified name.
 The sudo switch allows you to copy files to the system's bin directory.
 I hope this helps!
+
+
+### TODO
+Migrate to CMake: This will make it easier to build and install the project on different platforms.
+Fix bugs: One of the bugs is that the project fails if the destination is not specified.
+Add more features: For example, you could add support for copying directories, or for copying files with symbolic links.
