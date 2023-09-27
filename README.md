@@ -1,31 +1,4 @@
-This project is an improved version of the standard cp command. It adds the following new features:
-
-Support for copying compressed files
-Support for copying files with long names
-Support for copying files with special characters
-This project is still under development and may contain bugs. Please create a new issue if you find any bugs.
-
-Version: 1.0
-
-Author: Ehsan Tork
-
-GitHub link: 
-
-Thank you
-
-This description is about 100 words long and provides key information about the project. It also reminds potential contributors that the project is still under development and may contain bugs.
-
-If you want to provide more information, you can mention the following:
-
-What new features have you added to this project?
-What is this project used for?
-How to use this project?
-By providing more information, you can help users understand what your project does and how they can use it.
-
-Here is an example of a more detailed description:
-
-Description
-
+# Introduction
 This project is an improved version of the standard cp command. It adds the following new features:
 
 Support for copying compressed files: This project can copy files that are compressed using gzip, bzip2, or zip.
@@ -37,11 +10,40 @@ Version: 1.0
 
 Author: Ehsan Tork
 
-GitHub link: 
+GitHub link: https://github.com/journalehsan/neocp
 
 Thank you,
 Ehsan Tork
+## Installation
 
-This description is about 200 words long and provides more detailed information about the project's features and usage. It also includes a link to the project's documentation, which provides more information about how to use the project.
+To install and compile your project in Linux, follow these steps:
 
+Clone the project code from GitHub:
+``` git clone https://github.com/journalehsan/neocp.git ```
+Navigate to the project directory:
+cd neocp
+Compile the project:
+``` gcc -o neocp neocp.c ```
+OR
+
+clang -o neocp neocp.c
+Change the output to the name neocp with the -o switch:
+‍‍‍``` gcc -o neocp -o neocp neocp.c ```
+OR
+
+clang -o neocp -o neocp neocp.c
+Copy the neocp file to the system's bin directory:
+``` sudo cp neocp /usr/bin/ ```
+Now you can use neocp as a regular command:
+
+neocp source_file destination_file
+For example:
+
+``` neocp README.md ~/Desktop/README.md ```
+This command will copy the README.md file to the Desktop directory.
+
+Explanation:
+
+The -o switch tells the compiler to save the output with the specified name.
+The sudo switch allows you to copy files to the system's bin directory.
 I hope this helps!
