@@ -1,4 +1,13 @@
-// this code copy files and directories via cp command but add progress bar for more information
+/* 
+This code copy files and directories via cp command but add progress bar for more information
+COPYRIGHT (C) 2023 Ehsan Tork
+All rights reserved.
+mail: journalehsan@gmail.com
+GITHUB REPO: https://github.com/journalehsan/neocp
+This software is free software; you can redistribute it and/or
+modify it under the terms of the MIT License
+MIT License (MIT)
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
