@@ -18,12 +18,7 @@ MIT License (MIT)
 #include <dirent.h>
 #include <errno.h>
 #include <time.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <signal.h>
-#include <termios.h>
-#include <sys/select.h>
+
 
 #define MAX_PATH 1024
 #define MAX_BUF 1024
@@ -93,7 +88,7 @@ int main(int argc, char *argv[])
     //version option
      if(strcmp(argv[1], "-v") == 0 || strcmp(argv[1], "--version") == 0)
     {
-        printf("neocp version 1.0\n");
+        printf("neocp version 1.1\n");
         //add mit license author ehsan tork journalehsa@gmail.com
        
          printf("This is free software: you are free to change and redistribute it.\n");
