@@ -220,31 +220,33 @@ void print_error_and_exit(char *msg)
 
 void print_progress_bar(int cur, int total)
 {
-	// get terminal width
-	struct winsize w;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-	int width = w.ws_col;
-
-	// calculate ratio
-	float ratio = (float)cur / (float)total;
-
-	// calculate progress bar width
-	int bar_width = width - 10;
-	int progress_width = (int)(ratio * bar_width);
-	int blank_width = bar_width - progress_width;
-
-	// print progress bar
-	printf("\%3.0f%% [", ratio * 100);
-    for(int i = 0; i < progress_width; i++)
+	//better prgressbar in case of terminal size and modern ui
+    //progressbar looklike python pip progressbar
+    //get terminal size
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    int width = w.ws_col;
+    //calculate progressbar size
+    int progressbar_size = width - 20;
+    //calculate progressbar percent
+    int percent = (cur * 100) / total;
+    //calculate progressbar fill size
+    int fill_size = (cur * progressbar_size) / total;
+    //calculate progressbar empty size
+    int empty_size = progressbar_size - fill_size;
+    //print progressbar
+    printf("\r[");
+    for(int i = 0; i < fill_size; i++)
     {
         printf("=");
     }
-    for(int i = 0; i < blank_width; i++)
+    for(int i = 0; i < empty_size; i++)
     {
         printf(" ");
     }
-    printf("]\r");
+    printf("] %d%%", percent);
     fflush(stdout);
+    
 }
 
 // copy_file
