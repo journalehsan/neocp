@@ -57,10 +57,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/ehsant/Codes/neocp
+CMAKE_SOURCE_DIR = /home/mrtork/CLionProjects/neocp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/ehsant/Codes/neocp
+CMAKE_BINARY_DIR = /home/mrtork/CLionProjects/neocp
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -87,9 +87,9 @@ rebuild_cache/fast: rebuild_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ehsant/Codes/neocp/CMakeFiles /home/ehsant/Codes/neocp//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mrtork/CLionProjects/neocp/CMakeFiles /home/mrtork/CLionProjects/neocp//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ehsant/Codes/neocp/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/mrtork/CLionProjects/neocp/CMakeFiles 0
 .PHONY : all
 
 # The main clean target

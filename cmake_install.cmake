@@ -1,4 +1,4 @@
-# Install script for directory: /home/ehsant/Codes/neocp
+# Install script for directory: /home/mrtork/CLionProjects/neocp
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -50,5 +50,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/ehsant/Codes/neocp/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/mrtork/CLionProjects/neocp/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

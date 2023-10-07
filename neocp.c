@@ -9,6 +9,7 @@ modify it under the terms of the MIT License
 MIT License (MIT)
 */
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -18,6 +19,8 @@ MIT License (MIT)
 #include <dirent.h>
 #include <errno.h>
 #include <time.h>
+#include <math.h>
+#include <sys/time.h>
 
 
 #define MAX_PATH 1024
@@ -50,30 +53,6 @@ int g_total_inode = 0;
 int g_total_dev = 0;
 int g_total_nlink = 0;
 int g_total_blksize = 0;
-
-// function prototype
-void print_usage();
-void print_error(char *msg);
-void print_error_and_exit(char *msg);
-
-void print_progress_bar(int cur, int total);
-
-void copy_file(char *src, char *dst);
-void copy_dir(char *src, char *dst);
-void copy_link(char *src, char *dst);
-
-void get_file_info(char *path, char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-void get_dir_info(char *path, char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-void get_link_info(char *path, char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-
-void print_file_info(char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-void print_dir_info(char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-void print_link_info(char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-
-void print_file_info_with_progress(char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-void print_dir_info_with_progress(char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-void print_link_info_with_progress(char *name, char *size, char *time, char *mode, char *uid, char *gid, char *link, char *block, char *inode, char *dev, char *nlink, char *blksize);
-
 
 // main function
 int main(int argc, char *argv[])
@@ -131,7 +110,23 @@ int main(int argc, char *argv[])
 	struct stat src_stat;
 	if(lstat(src, &src_stat) == -1)
 	{
-		print_error_and_exit("lstat() error 5");
+		//if exists ask for overwrite otherwise show message
+        char answer[10];
+        printf("source is exists do you want to overwrite it? (y/n): ");
+        scanf("%s", answer);
+        if(strcmp(answer, "y") == 0)
+        {
+            // remove file
+            if(remove(src) == -1)
+            {
+                print_error_and_exit("overwite error");
+            }
+        }
+        else
+        {
+            // show message
+            print_error_and_exit("source is already exists.");
+        }
 	}
 	if(!S_ISREG(src_stat.st_mode) && !S_ISDIR(src_stat.st_mode) && !S_ISLNK(src_stat.st_mode))
 	{
@@ -196,6 +191,144 @@ int main(int argc, char *argv[])
 	return 0;
 }
 
+/* Specify how wide the progress bar should be. */
+#define PROGRESS_BAR_WIDTH 50
+
+/*
+ * Alternative progress bar where each block grows
+ * vertically instead of horizontally.
+ */
+/* #define VERTICAL */
+
+/* Various unicode character definitions. */
+#define BAR_START "\u2595"
+#define BAR_STOP  "\u258F"
+#define PROGRESS_BLOCK     "\u2588"
+
+#ifdef VERTICAL
+static const char * subprogress_blocks[] = { " ",
+                                             "\u2581",
+                                             "\u2582",
+                                             "\u2583",
+                                             "\u2584",
+                                             "\u2585",
+                                             "\u2586",
+                                             "\u2587"
+};
+#else
+static const char * subprogress_blocks[] = { " ",
+                                             "\u258F",
+                                             "\u258E",
+                                             "\u258D",
+                                             "\u258C",
+                                             "\u258B",
+                                             "\u258A",
+                                             "\u2589"
+};
+#endif
+
+#define NUM_SUBBLOCKS (sizeof(subprogress_blocks) / sizeof(subprogress_blocks[0]))
+
+/* Helper function to get the current time in usecs past the epoch. */
+static uint64_t get_timestamp(void) {
+    struct timeval tv;
+    uint64_t stamp = 0;
+    gettimeofday(&tv, NULL);
+    stamp = tv.tv_sec * 1000000 + tv.tv_usec;
+    return stamp;
+}
+
+/* Helper function to print a usecs value as a duration. */
+static void print_timedelta(uint64_t delta) {
+
+    uint64_t delta_secs = delta / 1000000;
+    uint64_t hours    = delta_secs / 3600;
+    uint64_t minutes  = (delta_secs - hours * 3600) / 60;
+    uint64_t seconds  = (delta_secs - hours * 3600 - minutes * 60);
+    uint64_t mseconds = (delta / 100000) % 10;
+
+    if (hours) {
+        printf("%lluh %llum %llus    ", hours, minutes, seconds);
+    }
+    else if (minutes) {
+        printf("%llum %02llus        ", minutes, seconds);
+    }
+    else {
+        printf("%llu.%llus           ", seconds, mseconds);
+    }
+}
+
+//function for round
+static double my_round(double d)
+{
+    //do not use math lib floor, round or etc because of some problem
+    //use mathematics calculation
+    double result;
+    result = (int)(d * 100 + .5);
+    result = (double)result / 100;
+    return result;
+}
+
+/*
+ * Main interface function for updating the progress bar. This
+ * function doesn't print a newline, so you can call it iteratively
+ * and have the progress bar grow across the screen. The caller can
+ * print a newline when the're ready to go to a new line.
+ *
+ * percentage: a double between 0.0 and 100.0 indicating the progress.
+
+ * start: usecs timestamp for when the task started, for calculating
+ *        remaining time.
+ */
+void print_progress(double percentage, uint64_t start) {
+    size_t i;
+    size_t total_blocks = PROGRESS_BAR_WIDTH * NUM_SUBBLOCKS;
+    size_t done = (size_t)my_round(percentage / 100.0 * total_blocks);
+    size_t num_blocks = done / NUM_SUBBLOCKS;
+    size_t num_subblocks = done % NUM_SUBBLOCKS;
+
+    uint64_t now = get_timestamp();
+    uint64_t elapsed = now - start;
+//    uint64_t estimated_total = elapsed / (percentage / 100.0);
+//    uint64_t remaining = estimated_total - elapsed;
+//reverse percentage by 100% - percentage;
+    uint64_t estimated_total = elapsed / ((100.0 - percentage) / 100.0);
+    uint64_t remaining = 100 - percentage;
+
+
+
+    printf("   Progress: %6.2f%% \t%s", percentage, BAR_START);
+
+    for (i = 0; i < num_blocks; i++) {
+        printf("%s", PROGRESS_BLOCK);
+    }
+
+    if (num_subblocks) {
+        printf("%s", subprogress_blocks[num_subblocks]);
+        i++;
+    }
+
+    for (; i < PROGRESS_BAR_WIDTH; i++) {
+        printf(" ");
+    }
+
+    printf("%s\t", BAR_STOP);
+
+    if (percentage < 100.0) {
+        printf("NOT COPY: ");
+        printf("%lu\t",remaining);
+        //print 's' for second
+        printf("%\t");
+    }
+    else {
+        printf("                          ");
+    }
+
+//    printf("\n"); // Add a newline character to ensure progress bar appears on a new line
+    fflush(stdout);
+    printf("\033[2K\r");
+}
+
 // function implementation
 void print_usage()
 {
@@ -215,32 +348,9 @@ void print_error_and_exit(char *msg)
 
 void print_progress_bar(int cur, int total)
 {
-	//better prgressbar in case of terminal size and modern ui
-    //progressbar looklike python pip progressbar
-    //get terminal size
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    int width = w.ws_col;
-    //calculate progressbar size
-    int progressbar_size = width - 20;
-    //calculate progressbar percent
-    int percent = (cur * 100) / total;
-    //calculate progressbar fill size
-    int fill_size = (cur * progressbar_size) / total;
-    //calculate progressbar empty size
-    int empty_size = progressbar_size - fill_size;
-    //print progressbar
-    printf("\r[");
-    for(int i = 0; i < fill_size; i++)
-    {
-        printf("=");
-    }
-    for(int i = 0; i < empty_size; i++)
-    {
-        printf(" ");
-    }
-    printf("] %d%%", percent);
-    fflush(stdout);
+	//print using print_progress function
+    print_progress((double)cur / total * 100, get_timestamp());
+
     
 }
 

@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/home/ehsant/Codes/neocp/neocp.c" "CMakeFiles/neocp.dir/neocp.c.o" "gcc" "CMakeFiles/neocp.dir/neocp.c.o.d"
+  "/home/mrtork/CLionProjects/neocp/neocp.c" "CMakeFiles/neocp.dir/neocp.c.o" "gcc" "CMakeFiles/neocp.dir/neocp.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
